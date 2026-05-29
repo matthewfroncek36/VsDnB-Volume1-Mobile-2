@@ -15,6 +15,8 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import openfl.utils.Assets;
 import play.notes.Note;
 import scripting.IScriptedClass.IPlayStateScriptedClass;
+import scripting.events.ScriptEvent;
+import scripting.events.ScriptEvent.*;
 import scripting.events.*;
 
 using StringTools;

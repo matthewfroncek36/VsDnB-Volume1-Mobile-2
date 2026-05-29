@@ -4,7 +4,7 @@ import backend.Conductor;
 import controls.PlayerSettings;
 import data.IRegistryEntry;
 import data.animation.Animation;
-import data.animation.Animation.AnimationData;
+import data.animation.AnimationData;
 import data.character.CharacterData;
 import data.character.CharacterRegistry;
 import flixel.FlxSprite;
@@ -16,7 +16,17 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import openfl.utils.Assets;
 import play.notes.Note;
 import scripting.IScriptedClass.IPlayStateScriptedClass;
-import scripting.events.*;
+import scripting.events.ScriptEvent;
+import scripting.events.ScriptEvent.UpdateScriptEvent;
+import scripting.events.ScriptEvent.PreferenceScriptEvent;
+import scripting.events.ScriptEvent.ConductorScriptEvent;
+import scripting.events.ScriptEvent.CountdownScriptEvent;
+import scripting.events.ScriptEvent.CameraScriptEvent;
+import scripting.events.ScriptEvent.NoteScriptEvent;
+import scripting.events.ScriptEvent.HoldNoteScriptEvent;
+import scripting.events.ScriptEvent.GhostNoteScriptEvent;
+import scripting.events.ScriptEventDispatcher;
+import scripting.events.ScriptEventType;
 
 using StringTools;
 
@@ -123,7 +133,7 @@ class Character extends FlxSprite implements IRegistryEntry<CharacterData> imple
 		var char:Character = CharacterRegistry.instance.fetchEntry(id);
 		char.characterType = characterType;
 		char.setPosition(x, y);
-		ScriptEventDispatcher.callEvent(char, new ScriptEvent(CREATE, false));
+		ScriptEventDispatcher.callEvent(char, new ScriptEvent(ScriptEventType.CREATE, false));
 		return char;
 	}
 
@@ -396,7 +406,7 @@ class Character extends FlxSprite implements IRegistryEntry<CharacterData> imple
 	@:allow(play.character.FlareonCharacter)
 	public function onNoteMiss(event:NoteScriptEvent):Void
 	{
-		if (event.eventCanceled || event.note.character != this)
+		if (event.eventCanceled || event.note == null || event.character != this)
 			return;
 
 		switch (characterType)

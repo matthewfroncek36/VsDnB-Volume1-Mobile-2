@@ -4,6 +4,7 @@ import backend.Conductor;
 import controls.PlayerSettings;
 import data.IRegistryEntry;
 import data.animation.Animation;
+import data.animation.AnimationData;
 import data.character.CharacterData;
 import data.character.CharacterRegistry;
 import flixel.FlxSprite;
@@ -15,8 +16,6 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import openfl.utils.Assets;
 import play.notes.Note;
 import scripting.IScriptedClass.IPlayStateScriptedClass;
-import scripting.events.ScriptEvent;
-import scripting.events.ScriptEvent.*;
 import scripting.events.*;
 
 using StringTools;
@@ -27,7 +26,7 @@ using StringTools;
 typedef CharacterSheet =
 {
 	var path:String;
-	var anims:Array<Animation>;
+	var anims:Array<AnimationData>;
 	var ?offsetFile:String;
 }
 
@@ -274,7 +273,7 @@ class Character extends FlxSprite implements IRegistryEntry<CharacterData> imple
 		return CharacterRegistry.instance.fetchData(id);
 	}
 
-	public function addCharAtlas(path:String, animations:Array<Animation>, ?offsetFile:String):Void
+	public function addCharAtlas(path:String, animations:Array<AnimationData>, ?offsetFile:String):Void
 	{
 		if (frames == null)
 			frames = Paths.getSparrowAtlas(path);

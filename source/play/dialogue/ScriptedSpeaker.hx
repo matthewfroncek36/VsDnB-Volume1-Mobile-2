@@ -31,11 +31,6 @@ class ScriptedSpeaker extends Speaker implements HScriptedClass
 			}
 		}
 
-		return new ScriptedSpeaker(id);
-	}
-
-	public static function listScriptClasses():Array<String>
-	{
-		return [];
+		return new Speaker(id);
 	}
 }

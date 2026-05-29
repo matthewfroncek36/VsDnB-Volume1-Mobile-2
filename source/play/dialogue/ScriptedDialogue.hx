@@ -31,6 +31,6 @@ class ScriptedDialogue extends Dialogue implements HScriptedClass
 			}
 		}
 
-		return new ScriptedDialogue(id);
+		return new Dialogue(id);
 	}
 }

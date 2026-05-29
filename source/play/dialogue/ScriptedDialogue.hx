@@ -33,9 +33,4 @@ class ScriptedDialogue extends Dialogue implements HScriptedClass
 
 		return new ScriptedDialogue(id);
 	}
-
-	public static function listScriptClasses():Array<String>
-	{
-		return [];
-	}
 }

@@ -4,7 +4,7 @@ import backend.Conductor;
 import controls.PlayerSettings;
 import data.IRegistryEntry;
 import data.animation.Animation;
-import data.animation.AnimationData;
+import data.animation.Animation.AnimationData;
 import data.character.CharacterData;
 import data.character.CharacterRegistry;
 import flixel.FlxSprite;

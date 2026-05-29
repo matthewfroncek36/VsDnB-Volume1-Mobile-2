@@ -1,25 +1,34 @@
 package play.dialogue;
 
-import data.dialogue.DialogueSpeakerData;
 import polymod.hscript.HScriptedClass;
 
 @:hscriptClass
-class ScriptedSpeaker extends DialogueSpeaker implements HScriptedClass
+class ScriptedSpeaker extends Speaker implements HScriptedClass
 {
-	public function new(data:DialogueSpeakerData)
+	public function new(id:String)
 	{
-		super(data);
+		super(id);
 	}
 
-	public static function scriptInit(scriptClass:Dynamic, data:DialogueSpeakerData):DialogueSpeaker
+	public static function scriptInit(scriptClass:Dynamic, id:String):Speaker
 	{
 		if (scriptClass != null)
 		{
 			try
 			{
-				var created:Dynamic = Type.createInstance(scriptClass, [data]);
-				if (Std.isOfType(created, DialogueSpeaker))
-					return cast created;
+				var cls:Class<Dynamic> = null;
+
+				if (Std.isOfType(scriptClass, String))
+					cls = Type.resolveClass(cast scriptClass);
+				else
+					cls = cast scriptClass;
+
+				if (cls != null)
+				{
+					var created:Dynamic = Type.createInstance(cls, [id]);
+					if (Std.isOfType(created, Speaker))
+						return cast created;
+				}
 			}
 			catch (e:Dynamic)
 			{
@@ -27,6 +36,11 @@ class ScriptedSpeaker extends DialogueSpeaker implements HScriptedClass
 			}
 		}
 
-		return new DialogueSpeaker(data);
+		return new ScriptedSpeaker(id);
+	}
+
+	public static function listScriptClasses():Array<String>
+	{
+		return [];
 	}
 }

@@ -1,0 +1,99 @@
+import flixel.util.FlxColor;
+
+class MatrixStage extends Stage
+{
+    var shouldPause:Bool = false;
+    var matrix:BGSprite;
+    var binaryVideo:FlxVideoSprite;
+
+    public function new()
+    {
+        super('matrix');
+    }
+
+    override function onUpdate(e:UpdateScriptEvent):Void
+    {
+        // Ensure the video is paused if the game is paused.
+        if (shouldPause)
+        {
+            binaryVideo.pause();
+        }
+        else
+        {
+            binaryVideo.resume();
+        }
+    }
+
+    override function load():Void
+    {
+        matrix = new BGSprite('matrix', -180, 100, Paths.image('backgrounds/playrobot/matrix/matrix_bg'));
+        matrix.scale.set(1.5 * (1 / stageZoom), 1.5 * (1 / stageZoom));
+        matrix.updateHitbox();
+        matrix.scrollFactor.set();
+        matrix.screenCenter();
+        matrix.antialiasing = false;
+        matrix.color = FlxColor.GREEN;
+        matrix.active = false;
+        add(matrix);
+
+        binaryVideo = new FlxVideoSprite();
+        binaryVideo.bitmap.onFormatSetup.add(onFormatChange);
+        binaryVideo.bitmap.onTimeChanged.add(onTimeChange);
+        binaryVideo.antialiasing = false;
+        binaryVideo.scrollFactor.set();
+        binaryVideo.color = FlxColor.LIME;
+        add(binaryVideo);
+
+        binaryVideo.load(Paths.video('binary'));
+        binaryVideo.play();
+    }
+
+    function onDestroy(e:ScriptEvent)
+    {
+        if (binaryVideo != null)
+        {
+            binaryVideo?.bitmap?.onFormatSetup?.remove(onFormatChange);
+            binaryVideo?.bitmap?.onTimeChanged?.remove(onTimeChange);
+        }
+    }
+
+    function onFormatChange():Void
+    {
+        binaryVideo.setGraphicSize(FlxG.width * (1 / (PlayState?.instance?.defaultCamZoom ?? stageZoom)), FlxG.height * (1 / (PlayState?.instance?.defaultCamZoom ?? stageZoom)));
+        binaryVideo.updateHitbox();
+        binaryVideo.screenCenter();
+    }
+
+    function onTimeChange(time:Int64):Void
+    {
+        if (binaryVideo.bitmap == null || shouldPause)
+            return;
+
+        if (time > 2700)
+        {
+            if (binaryVideo.bitmap != null)
+                binaryVideo.bitmap.time = 0;
+
+            if (shouldPause)
+                binaryVideo.pause();
+        }
+    }
+
+    public function switchColors(newColor:FlxColor)
+    {
+        matrix.color = newColor;
+        binaryVideo.color = newColor;
+    }
+
+    override function onPause(e:ScriptEvent)
+    {
+        shouldPause = true;
+        binaryVideo.pause();
+    }
+    
+    override function onResume(e:ScriptEvent)
+    {
+        shouldPause = false;
+        binaryVideo.resume();
+    }
+}

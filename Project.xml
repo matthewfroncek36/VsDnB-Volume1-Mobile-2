@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+
+	<!-- _________________________ Application Settings _________________________ -->
+
+	<app title="VS. Dave and Bambi" file="VsDave" packageName="com.dnbteam.daveandbambi" package="com.dnbteam.daveandbambi" main="Main" version="1.0.11" company="dnbteam"/>
+	<app preloader="flixel.system.FlxPreloader"/>
+	<set name="SWF_VERSION" value="11.8"/>
+
+	<!-- ____________________________ Window Settings ___________________________ -->
+
+	<!--These window settings apply to all targets-->
+	<window width="1280" height="720" fps="60" hardware="true" vsync="true" background="0x0000ffff" allow-high-dpi="true" />
+
+	<!--macOS-->
+	<window if="mac" orientation="auto" fullscreen="false" resizable="true" vsync="false" allow-high-dpi="false" />
+	
+	<!--HTML5-->
+	<window if="html5" resizable="true"/>
+
+	<!--Desktop-->
+	<window if="desktop" hardware="true" allow-shaders="true" require-shaders="true" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
+
+
+	<!--Mobile-->
+	<window if="mobile" orientation="landscape" fullscreen="true" resizable="false" allow-shaders="true" require-shaders="true"/>
+	<!-- _____________________________ Path Settings ____________________________ -->
+
+	<classpath name="source" />
+
+	<section if="FEATURE_TRACY">
+		<set name="BUILD_DIR" value="export/debug-tracy" if="debug" />
+		<set name="BUILD_DIR" value="export/release-tracy" unless="debug" />
+		<set name="BUILD_DIR" value="export/32bit-tracy" if="32bit" />
+	</section>
+	
+	<section unless="FEATURE_TRACY">
+		<set name="BUILD_DIR" value="export/debug" if="debug" />
+		<set name="BUILD_DIR" value="export/release" unless="debug" />
+		<set name="BUILD_DIR" value="export/32bit" if="32bit" />
+	</section>
+	
+	<set name="BUILD_DIR" value="export/debug" if="debug" />
+	<set name="BUILD_DIR" value="export/release" unless="debug" />
+	<set name="BUILD_DIR" value="export/32bit" if="32bit" />
+
+	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
+	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
+	<assets path="assets/preload/videos" rename="assets/videos" include="*.mp4" embed='false' />
+	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
+	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
+	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
+	<assets path='art/readme.txt' rename='PLEASE READ.txt' />
+	<assets path='art/icons' rename='icons' embed='true'/>
+	<assets path="assets/fonts" embed='true'/>
+
+	<define name="SHADERS_ENABLED"/>
+	<define name="PRELOAD_ALL" unless="web" />
+	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
+
+	<library name="songs" preload="true" />
+
+	<section if="PRELOAD_ALL">
+		<library name="shared"   preload="true" />
+	</section>
+	
+	<section if="NO_PRELOAD_ALL">
+		<library name="songs"    preload="false" />
+		<library name="shared"   preload="false" />
+	</section>
+
+	<!-- OpenAL config -->
+ 
+	<section if="desktop">
+	 	<assets path="alsoft.txt" rename="plugins/alsoft.ini" type="text" if="windows"/>
+		<assets path="alsoft.txt" rename="plugins/alsoft.conf" type="text" unless="windows"/>
+	</section>
+
+	<!-- _______________________________ Libraries ______________________________ -->
+
+	<haxedev set='webgl' />
+
+	<haxelib name="flixel" />
+	<haxelib name="flixel-addons" />
+	<haxelib name="hxvlc" if="desktop || mobile" />
+	<haxelib name="hscript" />
+	<haxelib name="polymod" />
+	<haxelib name="json2object" />
+	<haxelib name="hxdiscord_rpc" if="desktop"/>
+	<haxelib name="flixel-animate"/>
+	<haxelib name="grig.audio" />
+	<haxelib name="funkin.vis" />
+
+	<section if="FEATURE_TRACY">
+		<haxedef name="HXCPP_TELEMETRY" />
+		<haxedef name="HXCPP_TRACY" />
+		<haxedef name="HXCPP_TRACY_MEMORY" />
+		<haxedef name="HXCPP_TRACY_ON_DEMAND" />
+	</section>
+	
+	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
+	<haxedef name="FLX_NO_DEBUG" unless="debug" />
+	<!--<haxelib name="hxcpp-debug-server" if="debug"/>-->
+	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
+	
+	<!--Allow working memory greater than 1 Gig, therefore preventing the mod on slower hardware with less ram to lag-->
+	<haxedef name="HXCPP_GC_BIG_BLOCKS"/>
+	
+	<haxedef name="HXCPP_STACK_LINE"/>
+	<haxedef name="HXCPP_STACK_TRACE"/>
+	<haxedef name="hscriptPos" />
+
+	<!-- Configure Polymod -->
+	<haxedef name="POLYMOD_SCRIPT_EXT" value=".hx" />
+	<haxedef name="POLYMOD_SCRIPT_LIBRARY" value="scripts" />
+	<haxedef name="POLYMOD_ROOT_PATH" value="scripts/" />
+
+	<haxedef name="POLYMOD_APPEND_FOLDER" value="_append/" />
+	<haxedef name="POLYMOD_MERGE_FOLDER" value="_merge/" />
+	<haxedef name="POLYMOD_MOD_METADATA_FILE" value="_polymod_meta.json" />
+	<haxedef name="POLYMOD_MOD_ICON_FILE" value="_polymod_icon.png/" />
+	
+	<haxedef name="openfl-enable-handle-error" />
+	<haxedef name="analyzer-optimize" />
+	<haxedef name="lime_disable_sdl" />
+	
+	<!-- No Dead Code Elimination -->
+	<haxeflag name="-dce no" />
+
+
+	<setenv name="next"/>
+	
+	<!-- Build macro for FlxBasic -->
+	<haxeflag name="--macro" value="addMetadata('@:build(util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')" />
+
+	<!-- Ensure most to all packages are included at runtime. -->
+	<haxeflag name="--macro" value="include('api')" />
+	<haxeflag name="--macro" value="include('audio')" />
+	<haxeflag name="--macro" value="include('backend')" />
+	<haxeflag name="--macro" value="include('controls')" />
+	<haxeflag name="--macro" value="include('data')" />
+	<haxeflag name="--macro" value="include('graphics')" />
+	<haxeflag name="--macro" value="include('modding')" />
+	<haxeflag name="--macro" value="include('play')" />
+	<haxeflag name="--macro" value="include('scripting')" />
+	<haxeflag name="--macro" value="include('ui')" />
+	<haxeflag name="--macro" value="include('util')" />
+
+	<!-- Include flixel classes at runtime. Addons classes are added later -->
+	<haxeflag name="--macro" value="include('flixel', true, ['flixel.addons.*', 'flixel.system.macros.*'])" />
+
+	<!-- Include some flixel addons classes at runtime. -->
+	<haxeflag name="--macro" value="include('flixel.addons.display')" />
+	<haxeflag name="--macro" value="include('flixel.addons.effects')" />
+	<haxeflag name="--macro" value="include('flixel.addons.text')" />
+	<haxeflag name="--macro" value="include('flixel.addons.transition')" />
+
+	<!-- _________________________________ Custom _______________________________ -->
+
+	<!-- Do whatever you want I'm tired uninstall and install everytime -->
+	<certificate path="key.keystore" password="psychengine" alias="psychport" alias-password="psychengine" if="android" unless="debug" />
+	
+	<!-- Allow Access to Engine Files in MOBILE -->
+	<haxedef name="SHARE_MOBILE_FILES" if="mobile" />
+	<haxedef name="lime_use_old_deltatime" />
+	<haxedef name="openfl_pool_events" />
+	
+	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
+	
+	<icon path="art/icons/dave16.png" size='16'/>
+	<icon path="art/icons/dave32.png" size='32'/>
+	<icon path="art/icons/dave64.png" size='64'/>
+	<icon path="art/icons/dave.png"/>
+
+	<!-- ________________________ Import Linux Stuff _____________________________ -->
+	<target id="haxe" tool="linker" if="linux">
+		<lib name="/usr/lib64/libX11.so" if="HXCPP_M64" />
+	</target>
+</project>

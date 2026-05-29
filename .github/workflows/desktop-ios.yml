@@ -1,0 +1,168 @@
+name: Desktop and iOS Builds
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  buildLinux:
+    name: Linux Build
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Haxe
+        uses: ShadowEngineTeam/setup-haxe@main
+        with:
+          haxe-version: 4.3.7
+
+      - name: Install Linux packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libvlc-dev \
+            libvlccore-dev \
+            vlc \
+            libasound2-dev \
+            libx11-dev \
+            libxext-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxrandr-dev \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev
+
+      - name: Install Haxelib
+        run: |
+          echo "HAXEPATH=$(dirname "$(which haxe)")" >> "$GITHUB_ENV"
+          export HAXEPATH="$(dirname "$(which haxe)")"
+          haxelib setup "$HOME/haxelib"
+          haxelib install hmm --quiet
+          haxelib run hmm install
+
+      - name: Compile Linux
+        run: haxelib run lime build linux
+
+      - name: Publish Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildLinux
+          path: |
+            export/release/linux/bin/**
+            export/debug/linux/bin/**
+          if-no-files-found: warn
+
+  buildMac:
+    name: macOS Build
+    runs-on: macos-26
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Haxe
+        uses: ShadowEngineTeam/setup-haxe@main
+        with:
+          haxe-version: 4.3.7
+
+      - name: Install Haxelib
+        run: |
+          echo "HAXEPATH=$(dirname "$(which haxe)")" >> "$GITHUB_ENV"
+          export HAXEPATH="$(dirname "$(which haxe)")"
+          haxelib setup "$HOME/haxelib"
+          haxelib install hmm --quiet
+          haxelib run hmm install
+
+      - name: Compile macOS
+        run: haxelib run lime build mac
+
+      - name: Publish macOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildMac
+          path: |
+            export/release/macos/bin/**
+            export/release/mac/bin/**
+            export/debug/macos/bin/**
+            export/debug/mac/bin/**
+          if-no-files-found: warn
+
+  buildIOS:
+    name: iOS Build
+    runs-on: macos-26
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Haxe
+        uses: ShadowEngineTeam/setup-haxe@main
+        with:
+          haxe-version: 4.3.7
+
+      - name: Install Haxelib
+        run: |
+          echo "HAXEPATH=$(dirname "$(which haxe)")" >> "$GITHUB_ENV"
+          export HAXEPATH="$(dirname "$(which haxe)")"
+          haxelib setup "$HOME/haxelib"
+          haxelib install hmm --quiet
+          haxelib run hmm install
+
+      - name: Compile iOS Project
+        run: haxelib run lime build ios
+
+      - name: Publish iOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildIOS
+          path: |
+            export/release/ios/**
+            export/ios/**
+            export/debug/ios/**
+          if-no-files-found: warn
+
+  buildWindows:
+    name: Windows Build
+    runs-on: windows-2022
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Haxe
+        uses: ShadowEngineTeam/setup-haxe@main
+        with:
+          haxe-version: 4.3.7
+
+      - name: Install Haxelib
+        shell: pwsh
+        run: |
+          $haxePath = Split-Path (Get-Command haxe).Source
+          "HAXEPATH=$haxePath" | Out-File -FilePath $env:GITHUB_ENV -Append
+          $env:HAXEPATH = $haxePath
+
+          haxelib setup C:\haxelib
+          haxelib install hmm --quiet
+          haxelib run hmm install
+
+      - name: Compile Windows
+        shell: pwsh
+        run: haxelib run lime build windows
+
+      - name: Publish Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildWindows
+          path: |
+            export/release/windows/bin/**
+            export/debug/windows/bin/**
+          if-no-files-found: warn

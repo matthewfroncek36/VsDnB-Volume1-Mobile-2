@@ -1,0 +1,15 @@
+class RedVoidStage extends Stage
+{
+    public function new()
+    {        
+        super('red-void');
+    }
+    
+    override function load():Void
+    {   
+        var bg:VoidBGSprite = new VoidBGSprite('void', -1500, -700, Paths.image('backgrounds/void/redsky', 'shared'));
+        bg.scale.set(1.5, 1.5);
+        bg.updateHitbox();
+        add(bg);
+    }
+}

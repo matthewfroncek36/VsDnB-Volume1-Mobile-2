@@ -1,0 +1,20 @@
+{
+   "version": "1.0.0",
+   "name": "Flareon",
+   "scale": 6,
+   "danceSnap": 2,
+   "globalOffset": [20, -20],
+   "cameraOffsets": [0, -100],
+   "offsetFilePlayer": "flareon",
+   "offsetFileOpponent": "flareon",
+   "icon": "flareon-pixel",
+   "singDuration": 4,
+   "color": "0xf77b3e",
+   "nativelyPlayable": true,
+   "flipX": true,
+   "antialiasing": false,
+   "countdownData": {
+      "graphicPath": "normal",
+      "soundPath": "pixel"
+   }
+}

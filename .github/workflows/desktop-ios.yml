@@ -48,6 +48,9 @@ jobs:
           haxelib install hmm --quiet
           haxelib run hmm install
 
+      - name: Rebuild Lime (Linux)
+        run: haxelib run lime rebuild linux -64 -clean
+
       - name: Compile Linux
         run: haxelib run lime build linux
 
@@ -80,6 +83,9 @@ jobs:
           haxelib setup "$HOME/haxelib"
           haxelib install hmm --quiet
           haxelib run hmm install
+
+      - name: Rebuild Lime (macOS)
+        run: haxelib run lime rebuild macos -clean
 
       - name: Compile macOS
         run: haxelib run lime build mac
@@ -115,6 +121,9 @@ jobs:
           haxelib setup "$HOME/haxelib"
           haxelib install hmm --quiet
           haxelib run hmm install
+
+      - name: Rebuild Lime (iOS)
+        run: haxelib run lime rebuild ios -clean
 
       - name: Compile iOS Project
         run: haxelib run lime build ios
@@ -153,6 +162,10 @@ jobs:
           haxelib setup C:\haxelib
           haxelib install hmm --quiet
           haxelib run hmm install
+
+      - name: Rebuild Lime (Windows)
+        shell: pwsh
+        run: haxelib run lime rebuild windows -clean
 
       - name: Compile Windows
         shell: pwsh

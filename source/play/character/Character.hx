@@ -17,13 +17,15 @@ import play.notes.Note;
 import scripting.IScriptedClass.IPlayStateScriptedClass;
 import scripting.events.*;
 
+using StringTools;
+
 /**
  * Extra character atlas sheet information.
  */
 typedef CharacterSheet =
 {
 	var path:String;
-	var anims:Array<Dynamic>;
+	var anims:Array<Animation>;
 	var ?offsetFile:String;
 }
 
@@ -41,7 +43,7 @@ enum CharacterType
 /**
  * Base character used by players, opponents, GF, and background props.
  */
-class Character extends FlxSprite implements IRegistryEntry implements IPlayStateScriptedClass
+class Character extends FlxSprite implements IRegistryEntry<CharacterData> implements IPlayStateScriptedClass
 {
 	// DATA
 	public final id:String;
@@ -128,6 +130,7 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 	public function new(id:String)
 	{
 		super(0, 0);
+
 		this.id = id;
 		_data = fetchData(id);
 
@@ -154,6 +157,7 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 	override function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
+
 		if (animation == null || animation.curAnim == null) return;
 		if (debugMode || isDead) return;
 
@@ -164,6 +168,7 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 			playLoopingAnimation();
 
 		var shouldStopSinging:Bool = (characterType == CharacterType.PLAYER) ? !isHoldingNote() : true;
+
 		if (!isSingAnimation(animation.curAnim.name) && !isDanceAnimation(animation.curAnim.name) && !animation.finished)
 			shouldStopSinging = false;
 
@@ -171,9 +176,11 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 		{
 			holdTimer += elapsed;
 			var singTimeSteps:Float = (conductor.stepCrochet / 1000) * singDuration;
+
 			if (holdTimer >= singTimeSteps && shouldStopSinging)
 			{
 				var currentBaseAnimation:String = fetchBaseAnimationName(animation.curAnim.name);
+
 				if (hasEase(currentBaseAnimation))
 				{
 					if (!isEaseAnimation())
@@ -201,6 +208,7 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 			onDance.destroy();
 			onDance = null;
 		}
+
 		if (onSing != null)
 		{
 			onSing.removeAll();
@@ -211,6 +219,7 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 		if (scaleOffset != null) scaleOffset.put();
 		if (cameraNoteOffset != null) cameraNoteOffset.put();
 		if (cameraFocusPoint != null) cameraFocusPoint.put();
+
 		removeConductor(conductor);
 		super.destroy();
 	}
@@ -227,6 +236,7 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 			animation.onFinish.add(function(anim:String)
 			{
 				var currentAnimation:String = fetchBaseAnimationName(anim);
+
 				if (isLoopAnimation(anim)) return;
 				if (hasLoopAnimation(currentAnimation)) return;
 
@@ -262,7 +272,7 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 		return CharacterRegistry.instance.fetchData(id);
 	}
 
-	public function addCharAtlas(path:String, animations:Array<Dynamic>, ?offsetFile:String):Void
+	public function addCharAtlas(path:String, animations:Array<Animation>, ?offsetFile:String):Void
 	{
 		if (frames == null)
 			frames = Paths.getSparrowAtlas(path);
@@ -286,9 +296,11 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 		if (!force && animation != null)
 		{
 			var currentAnimation:String = animation.curAnim != null ? animation.curAnim.name : '';
+
 			if (hasEase(currentAnimation)) return;
 			if (isSinging()) return;
-			if (!isSingAnimation(currentAnimation) && !isDanceAnimation(currentAnimation) && animation.curAnim != null && !animation.finished) return;
+			if (!isSingAnimation(currentAnimation) && !isDanceAnimation(currentAnimation) && animation.curAnim != null && !animation.finished)
+				return;
 		}
 
 		cameraNoteOffset.set();
@@ -310,8 +322,11 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 	@:allow(play.character.FlareonCharacter)
 	public function sing(direction:Int, ?miss:Bool = false, ?alt:String = '', ?singArray:Array<String>):Void
 	{
-		if (singArray == null) singArray = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
-		if (direction < 0 || direction >= singArray.length) return;
+		if (singArray == null)
+			singArray = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
+
+		if (direction < 0 || direction >= singArray.length)
+			return;
 
 		var noteToPlay:String = singArray[direction];
 		holdTimer = 0;
@@ -326,7 +341,9 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 			};
 		}
 
-		if (miss) noteToPlay += 'miss';
+		if (miss)
+			noteToPlay += 'miss';
+
 		playAnim('sing${noteToPlay}' + alt, true);
 		onSing.dispatch(noteToPlay, miss);
 	}
@@ -339,10 +356,13 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 
 		if (altDanceSuffix != '' && !name.contains(altDanceSuffix) && isDanceAnimation(name.toLowerCase()))
 			name += altDanceSuffix;
+
 		if (altSingSuffix != '' && !name.contains(altSingSuffix) && isSingAnimation(name.toLowerCase()))
 			name += altSingSuffix;
 
-		if (!animation.exists(name)) return;
+		if (!animation.exists(name))
+			return;
+
 		animation.play(name, force, reversed, frame);
 
 		if (animOffsets.exists(name))
@@ -357,9 +377,14 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 	@:allow(play.character.FlareonCharacter)
 	public function playLoopingAnimation(?name:String, force:Bool = true):Void
 	{
-		if (animation == null) return;
-		if (name == null) name = animation.curAnim != null ? animation.curAnim.name : '';
+		if (animation == null)
+			return;
+
+		if (name == null)
+			name = animation.curAnim != null ? animation.curAnim.name : '';
+
 		var currentAnimation:String = fetchBaseAnimationName(name);
+
 		if (animation.exists(currentAnimation + '-loop'))
 			playAnim(currentAnimation + '-loop', force);
 	}
@@ -370,7 +395,9 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 	@:allow(play.character.FlareonCharacter)
 	public function onNoteMiss(event:NoteScriptEvent):Void
 	{
-		if (event.eventCanceled || event.note.character != this) return;
+		if (event.eventCanceled || event.note.character != this)
+			return;
+
 		switch (characterType)
 		{
 			case GF:
@@ -385,11 +412,15 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 	@:allow(play.character.FlareonCharacter)
 	public function onGhostNoteMiss(event:GhostNoteScriptEvent):Void
 	{
-		if (event.eventCanceled || event.character != this) return;
+		if (event.eventCanceled || event.character != this)
+			return;
+
 		switch (characterType)
 		{
-			case GF: playAnim('sad', true);
-			case PLAYER: this.sing(event.direction, true);
+			case GF:
+				playAnim('sad', true);
+			case PLAYER:
+				this.sing(event.direction, true);
 			default:
 		}
 	}
@@ -397,11 +428,15 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 	@:allow(play.character.FlareonCharacter)
 	public function onHoldNoteDrop(event:HoldNoteScriptEvent):Void
 	{
-		if (event.eventCanceled || event.character != this) return;
+		if (event.eventCanceled || event.character != this)
+			return;
+
 		switch (characterType)
 		{
-			case GF: playAnim('sad', true);
-			case PLAYER: this.sing(event.holdNote.direction, true);
+			case GF:
+				playAnim('sad', true);
+			case PLAYER:
+				this.sing(event.holdNote.direction, true);
 			default:
 		}
 	}
@@ -412,6 +447,7 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 		{
 			canDance = false;
 			playAnim('cheer', true);
+
 			animation.onFinish.addOnce(function(anim:String)
 			{
 				canDance = true;
@@ -422,12 +458,15 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 	@:allow(play.character.FlareonCharacter)
 	public function fetchBaseAnimationName(name:String):String
 	{
-		if (name == null) return '';
+		if (name == null)
+			return '';
+
 		for (suffix in ['-loop', '-ease'])
 		{
 			if (name.contains(suffix))
 				name = name.substring(0, name.lastIndexOf(suffix));
 		}
+
 		return name;
 	}
 
@@ -444,11 +483,13 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 	{
 		var camX:Float = 0;
 		var camY:Float = 0;
+
 		if (_data != null && _data.cameraOffsets != null && _data.cameraOffsets.length >= 2)
 		{
 			camX = _data.cameraOffsets[0];
 			camY = _data.cameraOffsets[1];
 		}
+
 		cameraFocusPoint.x = x + (width / 2) + camX;
 		cameraFocusPoint.y = y + (height / 2) + camY;
 	}
@@ -475,16 +516,23 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 
 	function loadOffsetFile(character:String):Void
 	{
-		if (character == null || character.length < 1) return;
-		if (!Assets.exists(Paths.offsetFile(character), TEXT)) return;
+		if (character == null || character.length < 1)
+			return;
+
+		if (!Assets.exists(Paths.offsetFile(character), TEXT))
+			return;
 
 		var offsetData:Array<String> = Assets.getText(Paths.offsetFile(character)).trim().split('\n');
+
 		for (offsetText in offsetData)
 		{
 			offsetText = offsetText.trim();
-			if (offsetText.length < 1) continue;
+
+			if (offsetText.length < 1)
+				continue;
 
 			var offsetInfo:Array<String> = offsetText.split(' ');
+
 			if (offsetInfo.length >= 3)
 				addOffset(offsetInfo[0], Std.parseFloat(offsetInfo[1]), Std.parseFloat(offsetInfo[2]));
 		}
@@ -492,7 +540,9 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 
 	public function removeConductor(input:Conductor):Void
 	{
-		if (input == null) return;
+		if (input == null)
+			return;
+
 		input.onStepHit.remove(stepHit);
 		input.onBeatHit.remove(beatHit);
 		input.onMeasureHit.remove(measureHit);
@@ -500,7 +550,9 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 
 	public function setupConductor(input:Conductor):Void
 	{
-		if (input == null) return;
+		if (input == null)
+			return;
+
 		input.onStepHit.add(stepHit);
 		input.onBeatHit.add(beatHit);
 		input.onMeasureHit.add(measureHit);
@@ -508,15 +560,23 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 
 	public function hasEase(?name:String):Bool
 	{
-		if (animation == null) return false;
-		if (name == null) name = animation.curAnim != null ? animation.curAnim.name : '';
+		if (animation == null)
+			return false;
+
+		if (name == null)
+			name = animation.curAnim != null ? animation.curAnim.name : '';
+
 		return animation.exists(name + '-ease');
 	}
 
 	public function hasLoopAnimation(?name:String):Bool
 	{
-		if (animation == null) return false;
-		if (name == null) name = animation.curAnim != null ? animation.curAnim.name : '';
+		if (animation == null)
+			return false;
+
+		if (name == null)
+			name = animation.curAnim != null ? animation.curAnim.name : '';
+
 		name = fetchBaseAnimationName(name);
 		return animation.exists(name + '-loop');
 	}
@@ -543,13 +603,17 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 
 	public function isLoopAnimation(?name:String):Bool
 	{
-		if (name == null) name = animation != null && animation.curAnim != null ? animation.curAnim.name : '';
+		if (name == null)
+			name = animation != null && animation.curAnim != null ? animation.curAnim.name : '';
+
 		return name.endsWith('-loop');
 	}
 
 	public function isEaseAnimation(?name:String):Bool
 	{
-		if (name == null) name = animation != null && animation.curAnim != null ? animation.curAnim.name : '';
+		if (name == null)
+			name = animation != null && animation.curAnim != null ? animation.curAnim.name : '';
+
 		return name.endsWith('-ease');
 	}
 
@@ -569,13 +633,11 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 	}
 
 	function stepHit(step:Int):Void {}
-
 	function beatHit(beat:Int):Void
 	{
 		if (danceSnap != 0 && beat % danceSnap == 0 && canDance)
 			dance();
 	}
-
 	function measureHit(measure:Int):Void {}
 
 	override function set_x(value:Float):Float
@@ -595,11 +657,13 @@ class Character extends FlxSprite implements IRegistryEntry implements IPlayStat
 	override function set_flipX(value:Bool):Bool
 	{
 		animOffsets.clear();
+
 		if (_data != null)
 		{
 			var flipped:Bool = value != getDataFlipX();
 			loadOffsetFile(flipped ? _data.offsetFilePlayer : _data.offsetFileOpponent);
 		}
+
 		return super.set_flipX(value);
 	}
 

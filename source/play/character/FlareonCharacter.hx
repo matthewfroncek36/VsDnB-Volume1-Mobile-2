@@ -1009,9 +1009,7 @@ class FlareonCharacter extends Character
 
 	function updateDropShadowFrameInfo(spr:FlxSprite)
 	{
-		using StringTools;
-
-        #if (!flash && sys)
+#if (!flash && sys)
 		if (spr.shader == null || spr.frame == null || !Std.isOfType(spr.shader, FlxRuntimeShader))
 			return;
 

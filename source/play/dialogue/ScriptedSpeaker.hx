@@ -5,11 +5,6 @@ import polymod.hscript.HScriptedClass;
 @:hscriptClass
 class ScriptedSpeaker extends Speaker implements HScriptedClass
 {
-	public function new(id:String)
-	{
-		super(id);
-	}
-
 	public static function scriptInit(scriptClass:Dynamic, id:String):Speaker
 	{
 		if (scriptClass != null)

@@ -6,11 +6,6 @@ import polymod.hscript.HScriptedClass;
 @:hscriptClass
 class ScriptedStage extends Stage implements HScriptedClass
 {
-	public function new(data:StageData)
-	{
-		super(data);
-	}
-
 	public static function scriptInit(scriptClass:Dynamic, data:StageData):Stage
 	{
 		if (scriptClass != null)

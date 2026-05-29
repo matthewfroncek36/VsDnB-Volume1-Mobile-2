@@ -5,11 +5,6 @@ import polymod.hscript.HScriptedClass;
 @:hscriptClass
 class ScriptedDialogue extends Dialogue implements HScriptedClass
 {
-	public function new(id:String)
-	{
-		super(id);
-	}
-
 	public static function scriptInit(scriptClass:Dynamic, id:String):Dialogue
 	{
 		if (scriptClass != null)

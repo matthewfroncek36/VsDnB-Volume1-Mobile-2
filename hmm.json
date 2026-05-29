@@ -3,8 +3,8 @@
     {
       "name": "lime",
       "type": "git",
-      "url": "https://github.com/QQQEB159/lime-8.2.2",
-      "ref": "main"
+      "url": "https://github.com/T5mpler/lime-dnb",
+      "ref": "master"
     },
     {
       "name": "openfl",

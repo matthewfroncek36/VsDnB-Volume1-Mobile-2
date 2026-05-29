@@ -1,0 +1,12 @@
+class FlareonCharacter extends Character 
+{
+	public function new()
+	{
+    	super('flareon');
+	}
+
+	override function load()
+	{
+    //idk if this is needed
+	}
+}

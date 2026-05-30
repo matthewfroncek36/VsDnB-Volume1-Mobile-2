@@ -37,8 +37,16 @@ jobs:
             libxi-dev \
             libxinerama-dev \
             libxrandr-dev \
+            libxcursor-dev \
             libgl1-mesa-dev \
-            libglu1-mesa-dev
+            libglu1-mesa-dev \
+            libwayland-dev \
+            wayland-protocols \
+            wayland-scanner \
+            libxkbcommon-dev \
+            libdbus-1-dev \
+            libudev-dev \
+            libpulse-dev
 
       - name: Install Haxelib
         run: |

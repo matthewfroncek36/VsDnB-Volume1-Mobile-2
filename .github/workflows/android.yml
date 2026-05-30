@@ -32,6 +32,9 @@ jobs:
           haxelib install hmm --quiet
           haxelib run hmm install
 
+      - name: Rebuild Lime (Android)
+        run: haxelib run lime rebuild android -clean
+
       - name: Setup Lime
         run: |
           haxelib run lime config ANDROID_SDK "$ANDROID_HOME"
@@ -39,8 +42,6 @@ jobs:
           haxelib run lime config JAVA_HOME "$JAVA_HOME_21_arm64"
           haxelib run lime config ANDROID_SETUP true
 
-      - name: Rebuild Lime (Android)
-        run: haxelib run lime rebuild android -clean
 
       - name: Compile
         run: haxelib run lime build android -ONLY_ARM64

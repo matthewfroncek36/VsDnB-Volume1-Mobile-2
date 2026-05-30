@@ -123,7 +123,7 @@ jobs:
           haxelib run hmm install
 
       - name: Rebuild Lime (iOS)
-        run: haxelib run lime rebuild ios -clean
+        run: haxelib run lime rebuild cpp
 
       - name: Compile iOS Project
         run: haxelib run lime build ios
